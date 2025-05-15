@@ -16,7 +16,7 @@ CLife_2D::CLife_2D() :
 	m_nLifeOld = 0;
 	m_nLife = 0;
 	m_nMaxLife = 0;
-	m_pText = CText::creat();
+	//m_pText = CText::creat();
 	//CObject::SetUpdate(false);
 }
 CLife_2D::CLife_2D(int nPriorith) :
@@ -26,7 +26,7 @@ CLife_2D::CLife_2D(int nPriorith) :
 	m_nLifeOld = 0;
 	m_nLife = 0;
 	m_nMaxLife = 0;
-	m_pText = CText::creat();
+	//m_pText = CText::creat();
 	//CObject::SetUpdate(false);
 }
 //============================================
@@ -45,16 +45,17 @@ void CLife_2D::Init()
 	auto pVtxBuff = GetVtxBuff();
 	auto pCor = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 	auto pX = GetX();
+	D3DXVECTOR3 siz = GetSiz();
 
 	VERTEX_2D* pVtx;		// 頂点情報へのポインタ
 	// 頂点バッファをロック
 	pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点座標更新
-	pVtx[0].pos = D3DXVECTOR3(pX.pos.x							, pX.pos.y - (pX.siz.y * 0.5f), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(pX.pos.x + (pX.siz.x * m_nLife)	, pX.pos.y - (pX.siz.y * 0.5f), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(pX.pos.x							, pX.pos.y + (pX.siz.y * 0.5f), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(pX.pos.x + (pX.siz.x * m_nLife)	, pX.pos.y + (pX.siz.y * 0.5f), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(pX.pos.x						, pX.pos.y - (siz.y * 0.5f), 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(pX.pos.x + (siz.x * m_nLife)	, pX.pos.y - (siz.y * 0.5f), 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(pX.pos.x						, pX.pos.y + (siz.y * 0.5f), 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(pX.pos.x + (siz.x * m_nLife)	, pX.pos.y + (siz.y * 0.5f), 0.0f);
 
 	// rhwの設定
 	pVtx[0].rhw = 1.0f;
@@ -79,8 +80,10 @@ void CLife_2D::Init()
 
 	SetColor(pCor);
 
-	lifeBG = CObject2D::creat(D3DXVECTOR3(pX.pos.x + (pX.siz.x * m_nMaxLife * 0.5f), pX.pos.y, 0.0f), D3DXVECTOR3(pX.siz.x * m_nMaxLife, pX.siz.y, 0.0f));
-	lifeBG->SetNormalUpdate(false);
+	// 体力背後板
+	lifeBG = CObject2D::creat(D3DXVECTOR3(pX.pos.x + (siz.x * m_nMaxLife * 0.5f), pX.pos.y, 0.0f), D3DXVECTOR3(siz.x * m_nMaxLife, siz.y, 0.0f));	// 生成
+	lifeBG->SetNormalUpdate(false);	// 通常更新をやめる
+	lifeBG->SetReleaseScene(false);	// シーンリリースをやめる
 }
 //============================================
 // 終了
@@ -88,11 +91,10 @@ void CLife_2D::Init()
 void CLife_2D::Uninit()
 {
 	CObject2D::Uninit();
-	if (lifeBG != nullptr &&
-		lifeBG->IsDeathFlag() == false)
+	// 体力背後板解放
+	if (lifeBG != nullptr)
 	{
-		lifeBG->Uninit();
-		lifeBG->DeathFlag();
+		lifeBG->Release();
 		lifeBG = nullptr;
 	}
 
@@ -102,10 +104,13 @@ void CLife_2D::Uninit()
 //============================================
 void CLife_2D::Update()
 {
+	// ライフが変動していたら
 	if (m_nLife != m_nLifeOld)
 	{
-		auto pVtxBuff = GetVtxBuff();
-		auto pX = GetX();
+
+		auto pVtxBuff = GetVtxBuff();	// バッファ取得
+		auto pX = GetX();	// トランスフォーム崇徳
+		D3DXVECTOR3 siz = GetSiz();	// サイズ取得
 		VERTEX_2D* pVtx;		// 頂点情報へのポインタ
 
 
@@ -113,10 +118,10 @@ void CLife_2D::Update()
 		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 		// 頂点座標更新
-		pVtx[0].pos = D3DXVECTOR3(pX.pos.x							, pX.pos.y - (pX.siz.y * 0.5f), 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(pX.pos.x + (pX.siz.x * m_nLife)	, pX.pos.y - (pX.siz.y * 0.5f), 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(pX.pos.x							, pX.pos.y + (pX.siz.y * 0.5f), 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(pX.pos.x + (pX.siz.x * m_nLife)	, pX.pos.y + (pX.siz.y * 0.5f), 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(pX.pos.x						, pX.pos.y - (siz.y * 0.5f), 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(pX.pos.x + (siz.x * m_nLife)	, pX.pos.y - (siz.y * 0.5f), 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(pX.pos.x						, pX.pos.y + (siz.y * 0.5f), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(pX.pos.x + (siz.x * m_nLife)	, pX.pos.y + (siz.y * 0.5f), 0.0f);
 
 		// 頂点バッファをロック
 		pVtxBuff->Unlock();

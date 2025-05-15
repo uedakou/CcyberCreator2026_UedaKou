@@ -43,7 +43,14 @@ namespace Scene
 		CGameObjectSave* CGameData::SaveObject(CGameObjectSave::TYPE type, CObject* object)
 		{
 			CGameObjectSave* p = CGameObjectSave::crate(object, type);
-
+			if (m_pTop == nullptr)
+			{
+				m_pTop = p;
+			}
+			if (m_pCur == nullptr)
+			{
+				m_pCur = p;
+			}
 			p->SetList(m_pTop, m_pCur);
 
 			return p;

@@ -28,6 +28,7 @@ CEffectGeneratorPaeticle::CEffectGeneratorPaeticle()
 //============================================
 CEffectGeneratorPaeticle::~CEffectGeneratorPaeticle()
 {
+	int a = 0;
 }
 //============================================
 // èâä˙âª

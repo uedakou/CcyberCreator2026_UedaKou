@@ -58,10 +58,10 @@ void CObject2D::Init()
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点座標更新
-	pVtx[0].pos = D3DXVECTOR3(x.pos.x - (x.siz.x * 0.5f), x.pos.y - (x.siz.y * 0.5f), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(x.pos.x + (x.siz.x * 0.5f), x.pos.y - (x.siz.y * 0.5f), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(x.pos.x - (x.siz.x * 0.5f), x.pos.y + (x.siz.y * 0.5f), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(x.pos.x + (x.siz.x * 0.5f), x.pos.y + (x.siz.y * 0.5f), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(x.pos.x - (m_siz.x * 0.5f), x.pos.y - (m_siz.y * 0.5f), 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(x.pos.x + (m_siz.x * 0.5f), x.pos.y - (m_siz.y * 0.5f), 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(x.pos.x - (m_siz.x * 0.5f), x.pos.y + (m_siz.y * 0.5f), 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(x.pos.x + (m_siz.x * 0.5f), x.pos.y + (m_siz.y * 0.5f), 0.0f);
 
 	// rhwの設定
 	pVtx[0].rhw = 1.0f;

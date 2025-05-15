@@ -5,11 +5,12 @@
 // 
 //===========================================
 #include "play.h"// プレイシーン
+#include "game_data.h"			// ゲームデータ
 #include "../object/field.h"	// フィールド
 #include "../object/player.h"	// プレイヤー
 #include "../object/enemy000.h"	// エネミー000
 #include "../object/enemy100.h"	// エネミー100(トラック)
-#include "scene_result.h"
+#include "scene_result.h"		// リザルトシーン
 
 namespace Scene {
 	class CTitle;
@@ -22,24 +23,40 @@ namespace Scene {
 		Play::Play(CBase* scene, CGameData* gameData) :
 			CBase(scene, gameData)
 		{
+			CObject::ReleaseScene();
+
+
+			// プレイヤー生成
+			CPlayer* pPlayer = CPlayer::creat();	// プレイヤー生成
+			pPlayer->SetReleaseScene(false);	// シーンリリースで解放するか設定
+			if (m_gameData != nullptr)
+			{
+				m_gameData->SetPlayer(pPlayer);	// プレイヤーを設定
+				m_gameData->SetScore(0);		// スコアを初期化
+			}
 
 			CManager* pManager = CManager::GetInstance();
 			CSound* pSound = pManager->GetSound();
 			pSound->PlaySoundA(CSound::SOUND_LABEL::SOUND_STAGE000);
 			bPause = false;
-			m_nScore = {};
 
-			m_pText = CText::creat(100, 0, 0, 3, FALSE, CText::Type::Terminal);
+			m_pText = CText::creat(100, 0, 0, 3, FALSE, CText::FontType::Terminal);
 			m_pText->SetSpace(800,  0, SCREEN_W, SCREEN_H);
 			m_pText->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+			m_pText->SetReleaseScene(false);
+
 		}
 		Play::~Play()
 		{
 			CManager* pManager = CManager::GetInstance();
 			CSound* pSound = pManager->GetSound();
 			pSound->StopSound(CSound::SOUND_LABEL::SOUND_STAGE000);
-
-
+			// スコア描画テキストを解放
+			if (m_pText != nullptr)
+			{
+				m_pText->Release();
+				m_pText = nullptr;
+			}
 		}
 
 		//============================================
@@ -75,9 +92,14 @@ namespace Scene {
 						switch (pObject->GetType())
 						{
 						case CObject::TYPE::PLAYER:
-							return nsPrev::CBase::makeScene<CGameOver>();
-
+						{
+							CPlayer* pPlayer = (CPlayer*)pObject;
+							if (pPlayer->GetLife() <= 0)
+							{
+								return nsPrev::CBase::makeScene<CGameOver>();
+							}
 							break;
+						}
 						case CObject::TYPE::ENEMY:	// 敵
 						{
 							CEnemy* pEnemy = (CEnemy*)pObject;
@@ -87,14 +109,14 @@ namespace Scene {
 							case CEnemy::ENEMY_TYPE::Enemy000:	// ボス100
 								if (pObject->IsDeathFlag() == true)
 								{
-									m_nScore += 5;
+									m_gameData->AddScore(5);
 								}
 								break;
 							case CEnemy::ENEMY_TYPE::Enemy100:	// ボス100
 								if (pObject->IsDeathFlag() == true)
 								{
-									//m_nNext = Result;
-									m_nScore += 100;
+									
+									m_gameData->AddScore(100);
 								}
 								break;
 							default:
@@ -118,18 +140,27 @@ namespace Scene {
 			else if (Kye->GetTrigger(DIK_T))
 			{
 				nsPrev::CBase* p = nsPrev::CBase::makeScene<CResult>();
-				((CResult*)p)->SetScore(m_nScore);
+				((CResult*)p)->SetScore(m_gameData->GetScore());
 				return p;
 			}
 			if (Kye->GetTrigger(DIK_Z))
 			{
-				m_nScore++;
+				m_gameData->AddScore(1);
 			}
 			else if (Kye->GetTrigger(DIK_X))
 			{
-				m_nScore--;
+				m_gameData->AddScore(-1);
 			}
 #endif // !_DEBUG
+			string Score = to_string(m_gameData->GetScore());
+			Score.insert(0, 4 - Score.length(), '0');
+
+			string text = "SCORE : " + Score;
+			if (m_pText != nullptr)
+			{
+				m_pText->SetText(text);
+			}
+
 			return this;
 		}
 		//============================================
@@ -137,12 +168,10 @@ namespace Scene {
 		//============================================
 		void Play::Draw() const
 		{
-			string Score = to_string(m_nScore);
-			Score.insert(0, 4 - Score.length(), '0');
-
-			string text = "SCORE : " + Score;
-
-			m_pText->Print(text);
+			if (m_pText != nullptr)
+			{
+				m_pText->Draw();
+			}
 		}
 		
 		//============================================

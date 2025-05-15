@@ -10,11 +10,15 @@
 #include "../object/player.h"	// プレイヤー
 #include "../base_object/object_fade.h"	// フェード
 #include "../base_object/object_billboard.h"	// ビルボード
-#include "../object/enemy100.h"
+#include "../object/enemy100.h"		// 敵100
 
 
 namespace Scene {
+	class CResult;
 	namespace Game {
+		const D3DXVECTOR3 CStage_000::s_pPUsiz = { 500.0f, 100.0f, 0.0f };	// ポップアップサイズ設定
+		const D3DXVECTOR3 CStage_000::s_pPUpos = { SCREEN_W * 0.5f -100.0f, s_pPUsiz.y * 0.5f, 0.0f };	// ポップアップ位置
+		const string CStage_000::s_PUTextyure = "data/TEXTURE/Instructions_000.png";	// ポップアップ位置
 		class CStage_001;
 		//============================================
 		// コンスト
@@ -22,13 +26,18 @@ namespace Scene {
 		CStage_000::CStage_000(CBase* scene, CGameData* gameData) :
 			CStageLode(scene, gameData)
 		{
-			CObject::ReleaseAll();
+			CObject::ReleaseScene();
 
 			m_nCntMakeFilde = 0;
+			CPlayer* pPlayer = gameData->GetPlayer();
+			pPlayer->SetPos(D3DXVECTOR3(0.0f, 0.0f, 0.0f));	// プレイヤー位置設定
 
-			m_player = CPlayer::creat();
+			m_gameData->SaveObject(CGameObjectSave::TYPE::PLAYER, pPlayer);
 
-			m_gameData->SaveObject(CGameObjectSave::TYPE::PLAYER, m_player);
+			// ポップアップを生成
+			m_pPU = CObject2D::creat(7, s_pPUpos, s_pPUsiz);	// 生成
+			m_pPU->SetTexture(s_PUTextyure);	// テクスチャ設定
+			m_pPU->SetReleaseScene(false);
 
 			// フィールド
 			CField* pField = nullptr;
@@ -38,7 +47,7 @@ namespace Scene {
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				D3DXVECTOR3(1000.0f, 0.0f, 1000.0f));
 			pField->SetBlock(1, 10);
-			pField->SetPlayer(m_player);
+			pField->SetPlayer(pPlayer);
 			m_gameData->SaveObject(CGameObjectSave::TYPE::FIELD, pField);
 
 			// ダート
@@ -47,7 +56,7 @@ namespace Scene {
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				D3DXVECTOR3(1000.0f, 0.0f, 1000.0f));
 			pField->SetBlock(3, 10);
-			pField->SetPlayer(m_player);
+			pField->SetPlayer(pPlayer);
 			m_gameData->SaveObject(CGameObjectSave::TYPE::FIELD, pField);
 
 
@@ -56,7 +65,7 @@ namespace Scene {
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				D3DXVECTOR3(1000.0f, 0.0f, 1000.0f));
 			pField->SetBlock(3, 10);
-			pField->SetPlayer(m_player);
+			pField->SetPlayer(pPlayer);
 			m_gameData->SaveObject(CGameObjectSave::TYPE::FIELD, pField);
 
 			// ビルボード
@@ -117,11 +126,13 @@ namespace Scene {
 		//============================================
 		CStage_000::~CStage_000()
 		{
-			if (m_player != nullptr)
-			{
-				m_player->DeathFlag();
-			}
 			m_gameData->AllFlagDeath();
+			// ポップアップが有ったら解放する
+			if (m_pPU!= nullptr)
+			{
+				m_pPU->Release();
+				m_pPU = nullptr;
+			}
 		}
 		//============================================
 		// デストラクタ
@@ -129,6 +140,7 @@ namespace Scene {
 		nsPrev::CBase* CStage_000::Update()
 		{
 			CStageLode::Update();
+			CPlayer* pPlayer = m_gameData->GetPlayer();
 
 			CObject* Top[MAX_PRIORITY];
 			CObject::GetAllObject(Top);
@@ -192,22 +204,22 @@ namespace Scene {
 					}
 					case CObject::TYPE::FIELD: {
 						CField* pFade = (CField*)pObject;
-						if (m_player != nullptr)
+						if (pPlayer != nullptr)
 						{
-							if (m_player->GetPos().z >= pFade->GetPos().z + 6000.0f)
+							if (pPlayer->GetPos().z >= pFade->GetPos().z + 6000.0f)
 							{
-								pFade->DeathFlag();
+								pFade->Release();
 							}
 						}
 						break;
 					}
 					case CObject::TYPE::BILLBOARD: {
 						CObjectBillbord* pFade = (CObjectBillbord*)pObject;
-						if (m_player != nullptr)
+						if (pPlayer != nullptr)
 						{
-							if (m_player->GetPos().z >= pFade->GetPos().z + 6000.0f)
+							if (pPlayer->GetPos().z >= pFade->GetPos().z + 6000.0f)
 							{
-								pFade->DeathFlag();
+								pFade->Release();
 							}
 						}
 						break;
@@ -217,9 +229,9 @@ namespace Scene {
 						{
 						case CEnemy::ENEMY_TYPE::Enemy000: {
 							CEnemy000* pEnemy = (CEnemy000*)pObject;
-							if (m_player != nullptr)
+							if (pPlayer != nullptr)
 							{
-								D3DXVECTOR3 playerPos = m_player->GetPos();
+								D3DXVECTOR3 playerPos = pPlayer->GetPos();
 								if (playerPos.z  - 1000.0f>= pEnemy->GetPos().z)
 								{
  									pEnemy->SetPosZ(playerPos.z - 1000.0f);
@@ -229,13 +241,13 @@ namespace Scene {
 						}
 						case CEnemy::ENEMY_TYPE::Enemy100: {
 							CEnemy100* pEnemy = (CEnemy100*)pObject;
-							if (m_player != nullptr)
+							if (pPlayer != nullptr)
 							{
 								if (pEnemy->GetLife() <= 0)
 								{
-									return CBase::makeScene<CStage_001>(m_gameData);
+									return nsPrev::CBase::makeScene<CResult>();
 								}
-								D3DXVECTOR3 playerPos = m_player->GetPos();
+								D3DXVECTOR3 playerPos = pPlayer->GetPos();
 								if (playerPos.z - 1000.0f >= pEnemy->GetPos().z)
 								{
 									pEnemy->SetPosZ(playerPos.z - 1000.0f);

@@ -29,7 +29,7 @@ CRenderer::~CRenderer()
 {
 	if (m_pText != nullptr)
 	{
-		m_pText->DeathFlag();
+		m_pText->Release();
 	}
 }
 //============================================
@@ -107,7 +107,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
-	m_pText = CText::creat();
+	//m_pText = CText::creat();
 
 	return S_OK;
 }
@@ -171,11 +171,13 @@ void CRenderer::Draw(void)
 //============================================
 void CRenderer::DrawFPS(void)
 {
-	this;
-	int nCountFPS = GetFPS();
-	string aStr;
-	wsprintf(&aStr[0], "FPS:%d\n", nCountFPS);
-	m_pText->Print(aStr);
+	if (m_pText != nullptr)
+	{
+		int nCountFPS = GetFPS();
+		string aStr;
+		wsprintf(&aStr[0], "FPS:%d\n", nCountFPS);
+		m_pText->Print(aStr);
+	}
 }
 //============================================
 // デバイス取得処理

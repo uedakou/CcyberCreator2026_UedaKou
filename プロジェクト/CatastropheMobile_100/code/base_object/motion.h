@@ -30,11 +30,11 @@ public:
 
 	void SetPosTarget(D3DXVECTOR3 pos) { m_x.pos = pos; }
 	void SetRotTarget(D3DXVECTOR3 rot) { m_x.rot = rot; }
-	void SetSizTarget(D3DXVECTOR3 siz) { m_x.siz = siz; }
+	void SetSizTarget(D3DXVECTOR3 siz) { m_x.scl = siz; }
 
 	D3DXVECTOR3 GetPosTarget() { return m_x.pos; }
 	D3DXVECTOR3 GetRotTarget() { return m_x.rot; }
-	D3DXVECTOR3 GetSizTarget() { return m_x.siz; }
+	D3DXVECTOR3 GetSizTarget() { return m_x.scl; }
 private:
 	X m_x;	// トランスフォーム
 
@@ -115,39 +115,38 @@ public:
 	virtual void Update()	override; // 更新
 	virtual void Draw()		override; // 描画
 
-
 	// 基本位置設定
 	void SetBasicX(X x) {
 		m_xBasic.pos = x.pos;
 		m_xBasic.rot = x.rot;
-		m_xBasic.siz = x.siz;
+		m_xBasic.scl = x.scl;
 	}
 	void SetBasicX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 siz) {
 		m_xBasic.pos = pos;
 		m_xBasic.rot = rot;
-		m_xBasic.siz = siz;
+		m_xBasic.scl = siz;
 	}
 	void SetBasicPos(D3DXVECTOR3 pos) { m_xBasic.pos = pos; }
 	void SetBasicRot(D3DXVECTOR3 rot) { m_xBasic.rot = rot; }
-	void SetBasicSiz(D3DXVECTOR3 siz) { m_xBasic.siz = siz; }
+	void SetBasicSiz(D3DXVECTOR3 siz) { m_xBasic.scl = siz; }
 
 	// 追加位置
 	void SetOffsetX(X x) {
 		m_xOffset.pos = x.pos;
 		m_xOffset.rot = x.rot;
-		m_xOffset.siz = x.siz;
+		m_xOffset.scl = x.scl;
 	}
 	void SetOffsetX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 siz) {
 		m_xOffset.pos = pos;
 		m_xOffset.rot = rot;
-		m_xOffset.siz = siz;
+		m_xOffset.scl = siz;
 	}
 	void SetOffsetPos(D3DXVECTOR3 pos) { m_xOffset.pos = pos; }
 	void SetOffsetRot(D3DXVECTOR3 rot) { m_xOffset.rot = rot; }
-	void SetOffsetSiz(D3DXVECTOR3 siz) { m_xOffset.siz = siz; }
+	void SetOffsetSiz(D3DXVECTOR3 siz) { m_xOffset.scl = siz; }
 
 	// 動き設定
-	void SetMoveX(X x, int nFrame) { SetMoveX(x.pos, x.rot, x.siz, nFrame); };
+	void SetMoveX(X x, int nFrame) { SetMoveX(x.pos, x.rot, x.scl, nFrame); };
 	void SetMoveX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 siz, int nFrame); 
 
 	// データ設定
@@ -163,13 +162,13 @@ public:
 	}
 	D3DXVECTOR3 GetBasicPos() { return m_xBasic.pos; }
 	D3DXVECTOR3 GetBasicRot() { return m_xBasic.rot; }
-	D3DXVECTOR3 GetBasicSiz() { return m_xBasic.siz; }
+	D3DXVECTOR3 GetBasicSiz() { return m_xBasic.scl; }
 
 	// 追加位置
 	X GetOffsetX() { return m_xOffset; }
 	D3DXVECTOR3 GetOffsetPos() { return m_xOffset.pos; }
 	D3DXVECTOR3 GetOffsetRot() { return m_xOffset.rot; }
-	D3DXVECTOR3 GetOffsetSiz() { return m_xOffset.siz; }
+	D3DXVECTOR3 GetOffsetSiz() { return m_xOffset.scl; }
 
 	// データ取得
 	int GetParentID() { return m_nParent; }				// 親ID取得
@@ -182,7 +181,7 @@ public:
 private:
 
 	X m_xBasic;			// 基本位置
-	X m_xOffset;			// 追加位置
+	X m_xOffset;		// 追加位置
 	X m_xMove;			// 動き
 
 	int m_nParent;			// 親ID
@@ -201,26 +200,28 @@ class CObjectMotion : public CObject
 public:
 	CObjectMotion();
 	virtual ~CObjectMotion()		override;
-	virtual void Init()		override;
-	virtual void Uninit()	override;
-	virtual void Update()	override;
-	virtual void Draw()		override;
+	virtual void Init()		override;	// 初期化
+	virtual void Uninit()	override;	// 終了
+	virtual void Update()	override;	// 更新
+	virtual void Draw()		override;	// 描画
+
+	virtual void Release()override;				// 自分自身の解放
 	
 	// 1f前の位置設定
 	void SetOldX(X x) { m_xold = x; }
 	void SetOldPos(D3DXVECTOR3 pos) { m_xold.pos = pos; }// 位置設定
 	void SetOldRot(D3DXVECTOR3 rot) { m_xold.rot = rot; }// 向き設定
-	void SetOldSiz(D3DXVECTOR3 siz) { m_xold.siz = siz; }// 大きさ設定
+	void SetOldSiz(D3DXVECTOR3 siz) { m_xold.scl = siz; }// 大きさ設定
 
 	X GetOldX() { return m_xold; }
 	D3DXVECTOR3 GetOldPos() { return m_xold.pos; }// 運動量設定
 	D3DXVECTOR3 GetOldRot() { return m_xold.rot; }// 回転量設定
-	D3DXVECTOR3 GetOldSiz() { return m_xold.siz; }// 膨張量設定
+	D3DXVECTOR3 GetOldSiz() { return m_xold.scl; }// 膨張量設定
 
 	void AddOldX(X x) { m_xold += x; }
 	void AddOldPos(D3DXVECTOR3 pos) { m_xold.pos += pos; }// 位置設定
 	void AddOldRot(D3DXVECTOR3 rot) { m_xold.rot += rot; }// 向き設定
-	void AddOldSiz(D3DXVECTOR3 siz) { m_xold.siz += siz; }// 大きさ設定
+	void AddOldSiz(D3DXVECTOR3 siz) { m_xold.scl += siz; }// 大きさ設定
 
 	CMotion* GetMotion(int nNum) { return m_pMotion[nNum]; }// モーションデータ取得
 

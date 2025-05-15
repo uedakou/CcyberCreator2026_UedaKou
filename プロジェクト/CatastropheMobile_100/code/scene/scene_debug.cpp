@@ -24,7 +24,7 @@ namespace Scene {
 		//============================================
 		CSceneDebug::~CSceneDebug()
 		{
-			m_pField->DeathFlag();
+			m_pField->Release();
 		}
 		//============================================
 		// XV

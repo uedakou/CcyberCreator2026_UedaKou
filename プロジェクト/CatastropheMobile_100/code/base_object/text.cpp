@@ -25,12 +25,13 @@ CText::CText()
 	m_nFont = SHIFTJIS_CHARSET;		// フォント
 	m_nSize = OUT_DEFAULT_PRECIS;	// 文字サイズ(変更不可)
 	m_nPitch = DEFAULT_PITCH;		// ピッチ
-	m_type = Type::Terminal;		// 書体名を含む文字列
+	m_type = FontType::Terminal;		// 書体名を含む文字列
 	m_pCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);	// 文字色
 	m_nSpaceSW = 0;
 	m_nSpaceSH = 0;
 	m_nSpaceBW = SCREEN_H;
 	m_nSpaceBH = SCREEN_W;
+	CObject::SetType(CObject::TEXT);
 }
 CText::CText(int nPriorithi):
 	CObject(nPriorithi)
@@ -45,12 +46,13 @@ CText::CText(int nPriorithi):
 	m_nFont = SHIFTJIS_CHARSET;		// フォント
 	m_nSize = OUT_DEFAULT_PRECIS;	// 文字サイズ(変更不可)
 	m_nPitch = DEFAULT_PITCH;		// ピッチ
-	m_type = Type::Terminal;		// 書体名を含む文字列
+	m_type = FontType::Terminal;		// 書体名を含む文字列
 	m_pCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);	// 文字色
 	m_nSpaceSW = 0;
 	m_nSpaceSH = 0;
 	m_nSpaceBW = SCREEN_W;
 	m_nSpaceBH = SCREEN_H;
+	CObject::SetType(CObject::TEXT);
 }
 //============================================
 // デストラクタ
@@ -80,7 +82,17 @@ void CText::Uninit()
 //============================================
 void CText::Update()
 {
+	int a = 0;
+}
+void CText::Draw()
+{
+	RECT rect = { m_nSpaceSW , m_nSpaceSH, m_nSpaceBW, m_nSpaceBH };
 
+	// テキストの描画
+	if (m_pFont != nullptr)
+	{
+		m_pFont->DrawText(nullptr, m_aText.c_str(), -1, &rect, DT_LEFT, m_pCol);
+	}
 }
 //============================================
 // 描画
@@ -139,7 +151,7 @@ void CText::CreateFont()
 //============================================
 // データ設定
 //============================================
-void CText::SetAll(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, DWORD nFont, DWORD nSize, DWORD nPitch, Type type)
+void CText::SetAll(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, DWORD nFont, DWORD nSize, DWORD nPitch, FontType type)
 {
 	m_nHyde = nH;
 	m_nWide = nW;
@@ -170,7 +182,7 @@ CText* CText::creat()
 
 	return pTex;
 }
-CText* CText::creat(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, Type type)
+CText* CText::creat(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, FontType type)
 {
 	CText* pTex = new CText(5);
 
@@ -185,7 +197,7 @@ CText* CText::creat(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, Type t
 
 	return pTex;
 }
-CText* CText::creat(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, DWORD nFont, DWORD nSize, DWORD nPitch, Type type)
+CText* CText::creat(int nH, UINT nW, UINT nBold, UINT nMip, bool bItalic, DWORD nFont, DWORD nSize, DWORD nPitch, FontType type)
 {
 	CText* pTex = new CText(4);
 

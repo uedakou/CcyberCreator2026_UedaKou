@@ -16,7 +16,7 @@ CLife_3D::CLife_3D() :
 	m_nLifeOld = 0;
 	m_nLife = 0;
 	m_nMaxLife = 0;
-	m_pText = CText::creat();
+	//m_pText = CText::creat();
 	posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	//CObject::SetUpdate(true);
 }
@@ -37,22 +37,24 @@ void CLife_3D::Init()
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff = GetVtxBuff();
 	D3DXCOLOR Cor = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 	X pX = GetX();
+	D3DXVECTOR3 siz = GetSiz();
 	posOld = pX.pos;
 	VERTEX_3D* pVtx;		// 頂点情報へのポインタ
 	// 頂点バッファをロック
 	pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点座標更新
-	pVtx[0].pos = D3DXVECTOR3(- (pX.siz.x * m_nMaxLife * 0.5f),pX.siz.y, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(+ (pX.siz.x * m_nMaxLife * 0.5f),pX.siz.y, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(- (pX.siz.x * m_nMaxLife * 0.5f),0.0f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(+ (pX.siz.x * m_nMaxLife * 0.5f),0.0f, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(- (siz.x * m_nMaxLife * 0.5f),siz.y, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(+ (siz.x * m_nMaxLife * 0.5f),siz.y, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(- (siz.x * m_nMaxLife * 0.5f),0.0f, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(+ (siz.x * m_nMaxLife * 0.5f),0.0f, 0.0f);
 
 	// 頂点バッファをロック
 	pVtxBuff->Unlock();
 
 	SetColor(Cor);
-	m_lifeBG = CObjectBillbord::creat(4,D3DXVECTOR3(pX.pos.x , pX.pos.y, pX.pos.z), D3DXVECTOR3(pX.siz.x * m_nMaxLife, pX.siz.y, 0.0f));
+	m_lifeBG = CObjectBillbord::creat(4,D3DXVECTOR3(pX.pos.x , pX.pos.y, pX.pos.z), D3DXVECTOR3(siz.x * m_nMaxLife, siz.y, 0.0f));
+	m_lifeBG->SetReleaseScene(false);
 
 }
 //============================================
@@ -63,8 +65,7 @@ void CLife_3D::Uninit()
 	CObjectBillbord::Uninit();
 	if (m_lifeBG != nullptr)
 	{
-		m_lifeBG->Uninit();
-		m_lifeBG->DeathFlag();
+		m_lifeBG->Release();
 		m_lifeBG = nullptr;
 	}
 }
@@ -76,17 +77,17 @@ void CLife_3D::Update()
 	if (m_nLife != m_nLifeOld)
 	{
 		auto pVtxBuff = GetVtxBuff();
-		auto pX = GetX();
+		auto siz = GetSiz();
 		VERTEX_3D* pVtx;		// 頂点情報へのポインタ
 
 		// 頂点バッファをロック
 		pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 		// 頂点座標更新
-		pVtx[0].pos = D3DXVECTOR3(-(pX.siz.x * m_nMaxLife * 0.5f)						, pX.siz.y, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(-(pX.siz.x * m_nMaxLife * 0.5f) + (pX.siz.x * m_nLife), pX.siz.y, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(-(pX.siz.x * m_nMaxLife * 0.5f)						, 0.0f, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(-(pX.siz.x * m_nMaxLife * 0.5f) + (pX.siz.x * m_nLife), 0.0f, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(-(siz.x * m_nMaxLife * 0.5f)						, siz.y, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(-(siz.x * m_nMaxLife * 0.5f) + (siz.x * m_nLife)	, siz.y, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(-(siz.x * m_nMaxLife * 0.5f)						, 0.0f, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(-(siz.x * m_nMaxLife * 0.5f) + (siz.x * m_nLife)	, 0.0f, 0.0f);
 
 		// 頂点バッファをロック
 		pVtxBuff->Unlock();

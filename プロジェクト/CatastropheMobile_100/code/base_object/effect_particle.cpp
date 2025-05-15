@@ -26,7 +26,7 @@ void CEffectParticle::Update()
 	m_nLife--;
 	if (m_nLife <= 0)
 	{
-		DeathFlag();
+		Release();
 	}
 }
 void CEffectParticle::Draw()

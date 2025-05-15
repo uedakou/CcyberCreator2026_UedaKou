@@ -37,14 +37,10 @@ CPlayer::~CPlayer()
 {
 	if (m_pLife != nullptr)
 	{
-		m_pLife->Uninit();
-		m_pLife->DeathFlag();
 		m_pLife = nullptr;
 	}
 	if (m_pEffect != nullptr)
 	{
-		m_pEffect->Uninit();
-		m_pEffect->DeathFlag();
 		m_pEffect = nullptr;
 	}
 }
@@ -62,6 +58,7 @@ void CPlayer::Init()
 	//SetMotion(1);
 	SetLife(PLAYER_LIFE);
 	m_pLife = CLife_2D::creat(D3DXVECTOR3(50.0f, 50.0f, 0.0f), PLAYER_LIFE);
+	m_pLife->SetReleaseScene(false);
 	m_pEffect = CEffectGeneratorPaeticle::creat(
 		D3DXVECTOR3(0.0f, 0.0f, -1.0f),
 		10.0f,
@@ -70,6 +67,8 @@ void CPlayer::Init()
 		3,
 		1
 	);
+	m_pEffect->SetReleaseScene(false);
+
 }
 //============================================
 // 終了
@@ -77,6 +76,19 @@ void CPlayer::Init()
 void CPlayer::Uninit()
 {
 	CCharacter::Uninit();
+	// ライフ解放
+	if (m_pLife != nullptr)
+	{
+		m_pLife->Release();
+		m_pLife = nullptr;
+	}
+
+	// エフェクト解放
+	if (m_pEffect)
+	{
+		m_pEffect->Release();
+		m_pEffect = nullptr;
+	}
 }
 //============================================
 // 更新
@@ -110,15 +122,15 @@ void CPlayer::Update()
 		SetPosY(0.0f);
 	}
 	D3DXVECTOR3 pos = GetPos();
-	if (pos.x < -500.0f + coll.siz.x * 0.5f)
+	if (pos.x < -500.0f + coll.scl.x * 0.5f)
 	{
 		SetMovePosX(0.0f);
-		SetPosX(-500.0f + coll.siz.x * 0.5f);
+		SetPosX(-500.0f + coll.scl.x * 0.5f);
 	}
-	else if (pos.x > 500.0f - coll.siz.x * 0.5f)
+	else if (pos.x > 500.0f - coll.scl.x * 0.5f)
 	{
 		SetMovePosX(0.0f);
-		SetPosX(500.0f - coll.siz.x * 0.5f);
+		SetPosX(500.0f - coll.scl.x * 0.5f);
 	}
 	int life = GetLife();
 	if (m_pLife != nullptr)
@@ -406,6 +418,11 @@ CPlayer::PlayerActivity* CPlayer::PlayerActivityUsually::update()
 				m_pPrimary->AddMovePos(D3DXVECTOR3(-PLAYER_BOOST, 0.0f, 0.0f));
 				return new PlayerActivityAttack(m_pPrimary);
 			}
+			else
+			{
+				m_pPrimary->AddMovePos(D3DXVECTOR3(0.0f, 0.0f, PLAYER_BOOST));
+				return new PlayerActivityAttack(m_pPrimary);
+			}
 		}
 	}
 
@@ -423,6 +440,7 @@ CPlayer::PlayerActivityAttack::PlayerActivityAttack(CPlayer* player) :
 
 	nAttackCnt = PLAYER_ATTAC;
 	player->SetInvincible(PLAYER_ATTAC);
+
 	m_pEffect = CEffectGeneratorPaeticle::creat(
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		15.0f,
@@ -430,8 +448,8 @@ CPlayer::PlayerActivityAttack::PlayerActivityAttack(CPlayer* player) :
 		D3DXCOLOR(0.0f, 0.1f, 1.0f, 1.0f),
 		5,
 		1,
-		PLAYER_ATTAC
-	);
+		PLAYER_ATTAC);
+
 }
 CPlayer::PlayerActivity* CPlayer::PlayerActivityAttack::update()
 {
@@ -539,6 +557,7 @@ CPlayer::PlayerActivity* CPlayer::PlayerActivityDeath::update()
 	}
 	else
 	{
+		m_pPrimary->Release();
 	}
 	return this;
 }

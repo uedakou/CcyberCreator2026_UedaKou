@@ -48,7 +48,7 @@ void CFade::Update()
 	}
 	else
 	{
-		DeathFlag();
+		Release();
 	}
 	switch (m_type)
 	{

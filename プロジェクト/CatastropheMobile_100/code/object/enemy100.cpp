@@ -33,6 +33,7 @@ CEnemy100::CEnemy100()
 		D3DCOLOR_RGBA(255, 10, 0, 255),
 		5,
 		1);
+	CEnemy::SetType(CEnemy::ENEMY_TYPE::Enemy100);
 }
 //============================================
 // デストラクタ
@@ -73,7 +74,9 @@ void CEnemy100::Init()
 			pObject = pNext;
 		}
 	}
-	CEnemy::SetType(CEnemy::ENEMY_TYPE::Enemy100);
+	SetLife(Enemy000_LIFE);
+	D3DXVECTOR3 pos = GetPos();
+	m_pLife3D = CLife_3D::creat(D3DXVECTOR3(pos.x, pos.y, pos.z), Enemy000_LIFE);
 }
 //============================================
 // 終了処理
@@ -84,7 +87,7 @@ void CEnemy100::Uninit()
 	if (m_pLife3D != nullptr)
 	{
 		m_pLife3D->Uninit();
-		m_pLife3D->DeathFlag();
+		m_pLife3D->Release();
 		m_pLife3D = nullptr;
 	}
 }
@@ -114,7 +117,7 @@ void CEnemy100::Update()
 	if (m_pLife3D != nullptr)
 	{
 		m_pLife3D->SetLife(life);
-		m_pLife3D->SetPos(D3DXVECTOR3(pos.x, pos.y + 50.0f, pos.z));
+		m_pLife3D->SetPos(D3DXVECTOR3(pos.x, pos.y + 70.0f, pos.z));
 	}
 	CEnemy::Update();
 	if (m_pEffect != nullptr)
@@ -604,7 +607,7 @@ CEnemy100::CActivity_Enemy100* CEnemy100::CActivity_Enemy100_Dethe::update()
 	m_nCnt++;
 	if (m_nCnt >= m_MaxCnt)
 	{
-		m_pPrimary->DeathFlag();
+		m_pPrimary->Release();
 	}
 	return this;
 }

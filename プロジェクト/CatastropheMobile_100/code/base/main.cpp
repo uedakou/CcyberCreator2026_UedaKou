@@ -105,19 +105,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hindtscePrev, _I
 			}
 			if ((dwCuppentTime - dwExecLastTime) >= (1000 / FPS))
 			{// 60文の1秒経過
-				while ((dwCuppentTime - dwExecLastTime) >= (1000 / FPS)) // 16.66ms 経過していたら
-				{
-					// 更新処理 (遅れていたら追いつくまで実行)
-					instance->Update();
+				instance->Update();	// 更新
 
-					// 次のフレーム時刻に補正
-					dwExecLastTime += (1000 / FPS);
 
-					dwFrameCount++;
-				}
-
-				// 描画処理 (1回だけ)
-				instance->Draw();
+				instance->Draw();	// 描画
 			}
 
 		}

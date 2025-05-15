@@ -174,7 +174,7 @@ CEnemy000Tutorial::CActivity_Enemy000Tutoriale* CEnemy000Tutorial::CActivity_Ene
 	}
 	else
 {
-		m_pPrimary->DeathFlag();
+		m_pPrimary->Release();
 	}
 	return this;
 }

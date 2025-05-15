@@ -20,7 +20,7 @@
 typedef struct {
 	D3DXVECTOR3 pos;	// 位置
 	D3DXVECTOR3 rot;	// 向き
-	D3DXVECTOR3 siz;	// 大きさ(倍率)
+	D3DXVECTOR3 scl;	// スケール
 }Transform;
 
 // トランスフォーム
@@ -31,7 +31,7 @@ public:
 	X(D3DXVECTOR3 Vec3pos, D3DXVECTOR3 Vec3rot, D3DXVECTOR3 Vec3siz) {
 		pos = Vec3pos;
 		rot = Vec3rot;
-		siz = Vec3siz;
+		scl = Vec3siz;
 	}
 
 	X& operator+= (const X& transform)
@@ -44,9 +44,9 @@ public:
 		rot.y += transform.rot.y;
 		rot.z += transform.rot.z;
 
-		siz.x += transform.siz.x;
-		siz.y += transform.siz.y;
-		siz.z += transform.siz.z;
+		scl.x += transform.scl.x;
+		scl.y += transform.scl.y;
+		scl.z += transform.scl.z;
 		return *this;
 	}
 	X& operator-= (const X& transform)
@@ -59,9 +59,9 @@ public:
 		rot.y -= transform.rot.y;
 		rot.z -= transform.rot.z;
 
-		siz.x -= transform.siz.x;
-		siz.y -= transform.siz.y;
-		siz.z -= transform.siz.z;
+		scl.x -= transform.scl.x;
+		scl.y -= transform.scl.y;
+		scl.z -= transform.scl.z;
 		return *this;
 	}
 	X& operator*= (const X& transform)
@@ -74,9 +74,9 @@ public:
 		rot.y *= transform.rot.y;
 		rot.z *= transform.rot.z;
 
-		siz.x *= transform.siz.x;
-		siz.y *= transform.siz.y;
-		siz.z *= transform.siz.z;
+		scl.x *= transform.scl.x;
+		scl.y *= transform.scl.y;
+		scl.z *= transform.scl.z;
 		return *this;
 	}
 	X& operator/= (const X& transform)
@@ -89,9 +89,9 @@ public:
 		rot.y /= transform.rot.y;
 		rot.z /= transform.rot.z;
 
-		siz.x /= transform.siz.x;
-		siz.y /= transform.siz.y;
-		siz.z /= transform.siz.z;
+		scl.x /= transform.scl.x;
+		scl.y /= transform.scl.y;
+		scl.z /= transform.scl.z;
 		return *this;
 	}
 };

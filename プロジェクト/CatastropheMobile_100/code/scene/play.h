@@ -12,6 +12,7 @@
 //#include "game_data.h"					// ゲームデータ
 #include "../base_object/text.h"	// テキスト
 
+
 #define MAX_FIELD (16)	// 地面最大数
 #define MAX_ENEMY (64)	// 敵最大数
 
@@ -31,7 +32,6 @@ namespace Scene {
 			void CameraController();
 		private:
 			bool bPause;	// ポーズ
-			int m_nScore;	// スコア
 			CText* m_pText;	// テキスト
 		};
 	}

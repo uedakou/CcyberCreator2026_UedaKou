@@ -28,10 +28,11 @@ CObject::CObject()
 	m_x = X(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(1.0f, 1.0f, 1.0f));
 	m_fDistance = 0.0f;
 
-	m_bAllUpdate = true;		// 全体で更新するか
+	m_bAllUpdate = true;	// 全体で更新するか
 	m_bPoseUpdate = false;	// ポーズ中更新するか
-	m_bAllDraw = true;			// 全体で描画するか
+	m_bAllDraw = true;		// 全体で描画するか
 	m_bPoseDraw = true;		// ポーズ中描画するか
+	m_bReleaseScene = true;	// シーンでリリースするか
 
 	m_bDeath = false;		// デスフラグ
 
@@ -65,6 +66,7 @@ CObject::CObject(const int nPriority)
 	m_bPoseUpdate = false;	// ポーズ中更新するか
 	m_bAllDraw = true;			// 全体で描画するか
 	m_bPoseDraw = true;		// ポーズ中描画するか
+	m_bReleaseScene = true;	// シーンでリリースするか
 
 	m_bDeath = false;		// デスフラグ
 
@@ -100,32 +102,49 @@ CObject::TYPE CObject::GetType()
 //============================================
 void CObject::Release()
 {
-
-	CObject* pNext = m_pNext;	// 次保管
-	CObject* pPrev = m_pPrev;	// 前保管
-	if (pNext != nullptr)
-	{// 次に前を入れる
-		pNext->SetPrev(pPrev);
-	}
-	if (pPrev != nullptr)
-	{// 前に次を入れる
-		pPrev->SetNext(pNext);
-	}
-
-	for (int nCnt = 0; nCnt < MAX_PRIORITY; nCnt++)
+	m_bDeath = true;
+}
+/// <summary>
+/// シーンチェンジ時に解放
+/// </summary>
+void CObject::ReleaseScene()
+{
+	for (int nCntPriority = 0; nCntPriority < MAX_PRIORITY; nCntPriority++)
 	{
-		if (m_pTop[nCnt] == this)
+		CObject* pObjact = m_pTop[nCntPriority];
+		while (pObjact != nullptr)
 		{
-			m_pTop[nCnt] = pNext;
-		}
-		if (m_pCur[nCnt] == this)
-		{
-			m_pCur[nCnt] = pPrev;
+			CObject* pNext = pObjact->GetNext();	//	次保管
+			// シーンチェンジしたらリリースをするかどうか
+			if (pObjact->m_bReleaseScene)
+			{
+				CObject* pNext = pObjact->m_pNext;	// 次保管
+				CObject* pPrev = pObjact->m_pPrev;	// 前保管
+				if (pNext != nullptr)
+				{// 次に前を入れる
+					pNext->SetPrev(pPrev);
+				}
+				if (pPrev != nullptr)
+				{// 前に次を入れる
+					pPrev->SetNext(pNext);
+				}
+
+				if (m_pTop[nCntPriority] == pObjact)
+				{
+					m_pTop[nCntPriority] = pNext;
+				}
+				if (m_pCur[nCntPriority] == pObjact)
+				{
+					m_pCur[nCntPriority] = pPrev;
+				}
+				pObjact->Uninit();
+				delete pObjact;
+			}
+
+			pObjact = pNext;
+
 		}
 	}
-
-	Uninit();
-	delete this;
 }
 //============================================
 // 全オブジェクト解放
@@ -135,18 +154,19 @@ void CObject::ReleaseAll()
 	for (int nCntPriority = 0; nCntPriority < MAX_PRIORITY; nCntPriority++)
 	{
 		CObject* pObjact = m_pTop[nCntPriority];
-		m_pTop[nCntPriority] = nullptr;
 		while (pObjact != nullptr)
 		{
-			CObject* pNext = pObjact->GetNext();	//	次保管
+			CObject* pNext = pObjact->m_pNext;	// 次保管
 
-			pObjact->DeathFlag();
+			pObjact->Release();
 
 			pObjact = pNext;
 		}
-		m_pCur[nCntPriority] = nullptr;
 	}
 }
+/// <summary>
+/// 死亡フラグが立っていたら解放
+/// </summary>
 void CObject::ReleaseDeathFlag()
 {
 	for (int nCntPriority = 0; nCntPriority < MAX_PRIORITY; nCntPriority++)
@@ -157,7 +177,28 @@ void CObject::ReleaseDeathFlag()
 			CObject* pNext = pObjact->m_pNext;	//	次保管
 			if (pObjact->m_bDeath == true)
 			{// 死亡フラグが立っていたら
-				pObjact->Release();
+				CObject* pNext = pObjact->m_pNext;	// 次保管
+				CObject* pPrev = pObjact->m_pPrev;	// 前保管
+				if (pNext != nullptr)
+				{// 次に前を入れる
+					pNext->SetPrev(pPrev);
+				}
+				if (pPrev != nullptr)
+				{// 前に次を入れる
+					pPrev->SetNext(pNext);
+				}
+
+				if (m_pTop[nCntPriority] == pObjact)
+				{
+					m_pTop[nCntPriority] = pNext;
+				}
+				if (m_pCur[nCntPriority] == pObjact)
+				{
+					m_pCur[nCntPriority] = pPrev;
+				}
+
+				pObjact->Uninit();
+				delete pObjact;
 			}
 			pObjact = pNext;
 		}
@@ -235,6 +276,7 @@ void CObject::DrawAll()
 			pObjact = pNext;
 		}
 	}
+
 }
 //============================================
 // オブジェクト取得
@@ -263,17 +305,13 @@ void CObject::Sort()
 		CObject* max;			// 次に大きい
 		CObject* prevMax;
 		CObject* prevComp;
-
 		//printf("リストを昇順ソートします\n");
-
 		headUnsorted = m_pTop[nCnt];    /* 未ソートリスト */
 		headSorted = NULL;      /* ソート済リスト */
-
 		while (headUnsorted != NULL) {
 			max = headUnsorted;         /* 最大値要素を初期化 */
 			prevMax = NULL;     /* 最大値要素の前の要素を初期化 */
 			prevComp = headUnsorted;
-
 			// 未ソートリストから条件を満たす最大値を探す
 			while (prevComp->m_pNext != NULL) {
 				// 条件を満たす場合のみ比較
@@ -286,7 +324,6 @@ void CObject::Sort()
 				}
 				prevComp = prevComp->m_pNext;   // 次の要素に進む
 			}
-
 			// 最大値が見つからない場合、残りのリストはソート対象外
 			if (max == NULL) {//maxがNULLにならない
 				break;

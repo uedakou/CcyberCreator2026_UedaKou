@@ -16,7 +16,6 @@ namespace Scene {
 			~CGameManager();
 		private:
 			nsPrev::CBase* m_pScene;		// シーン
-			nsPrev::CBase* m_pNextScene;	// 次シーン
 			nsPrev::CBase* m_pStageController;	// ステージ生成
 
 		public :

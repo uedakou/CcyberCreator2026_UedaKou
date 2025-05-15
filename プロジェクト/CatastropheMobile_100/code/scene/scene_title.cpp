@@ -24,7 +24,7 @@ namespace Scene {
 		CBase(*scene),
 		m_nCntMax(30)
 	{
-		CObject::ReleaseAll();
+		CObject::ReleaseScene();
 		CManager* manager = CManager::GetInstance();	// マネージャー
 		CCamera* pCamera = manager->GetCamera();
 		pCamera->SetCameraPosNomal();
@@ -120,27 +120,6 @@ namespace Scene {
 		CManager* pManager = CManager::GetInstance();	// マネージャー
 		CSound* pSound = pManager->GetSound();	// サウンド
 		pSound->StopSound(CSound::SOUND_LABEL::SOUND_TITLE000);	// BGMを止める
-		// タイトル
-		if (m_pTitle != nullptr)
-		{
-			m_pTitle->DeathFlag();
-		}
-		// セレクト
-		for (int nCnt = 0; nCnt < CTitleSelect::MAX; nCnt++ )
-		{
-			if (m_pSelect[nCnt] != nullptr)
-			{
-				m_pSelect[nCnt]->DeathFlag();
-			}
-		}
-		// フィールド
-		for (int nCnt = 0; nCnt < 3; nCnt++)
-		{
-			if (m_pField[nCnt] != nullptr)
-			{
-				m_pField[nCnt]->DeathFlag();
-			}
-		}
 	}
 	//============================================
 	// 更新
@@ -271,7 +250,7 @@ namespace Scene {
 					D3DXVECTOR3 pos = pTree->GetPos();
 					if (pos.z <= -500.0f)
 					{
-						pTree->DeathFlag();
+						pTree->Release();
 					}
 
 				}

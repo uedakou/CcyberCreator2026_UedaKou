@@ -34,7 +34,7 @@ CCamera::CCamera():
 	m_bCameraTipe = CAMERA_TYPE;				// カメラ遠近投影
 	m_bCumeraController = CAMERA_CONTROLLER;			// プレイヤー追従
 
-	m_pTex = CText::creat();
+	//m_pTex = CText::creat();
 }
 //============================================
 // デストラ

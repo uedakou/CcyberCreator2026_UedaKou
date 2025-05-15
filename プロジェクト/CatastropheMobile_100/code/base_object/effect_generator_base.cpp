@@ -41,9 +41,9 @@ void CEffectGeneratorBase::Update()
 {
 	m_nCntLifeTime++;
 	if (m_nLife != -1 &&
-		m_nCntLifeTime >= m_nLife)
+		m_nCntLifeTime > m_nLife)
 	{
-		DeathFlag();
+		Release();
 	}
 }
 //============================================

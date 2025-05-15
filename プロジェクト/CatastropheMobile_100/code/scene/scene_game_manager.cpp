@@ -6,6 +6,7 @@
 //===========================================
 #include "scene_game_manager.h"	// ゲームマネージャー	
 #include "game_data.h"			// ゲームデータ
+#include "../object/player.h"	//　プレイヤー
 
 namespace nsThis = Scene::Game;
 namespace Scene {
@@ -20,30 +21,35 @@ namespace Scene {
 		//============================================
 		CGameManager::CGameManager(nsPrev::CBase* scene) :
 			CBase(scene, new CGameData()),
-			m_pScene(makeScene<Play>(m_gameData)),
+			m_pScene(makeScene<Play>(m_gameData))
 #if 1
-			m_pStageController(makeScene<CStage_Tutorial>(m_gameData))
+			,m_pStageController(makeScene<CStage_Tutorial>(m_gameData))
 #else 
-			m_pStageController(makeScene<CSceneDebug>(m_gameData))
 #endif // 0
-
 		{
-			//CObject::ReleaseAll();
-
-			m_pNextScene = nullptr;
 		}
 		//============================================
 		// デストラクタ
 		//============================================
 		CGameManager::~CGameManager()
 		{
+			// 管理シーン
 			if (m_pScene != nullptr)
 			{
 				delete m_pScene;
 			}
-			if (m_pStageController)
+			// 生成シーン
+			if (m_pStageController != nullptr)
 			{
 				delete m_pStageController;
+			}
+			// プレイヤーをリリース
+			CPlayer* pPlayer = m_gameData->GetPlayer();
+			if (pPlayer != nullptr)
+			{
+				pPlayer->Release();
+				m_gameData->SetPlayer(nullptr);
+				pPlayer = nullptr;
 			}
 		}
 
@@ -52,11 +58,11 @@ namespace Scene {
 		//============================================
 		nsPrev::CBase* CGameManager::Update()
 		{
+			if (m_pScene != nullptr)
 			{
 				auto p = m_pScene->Update();
 				if (p != m_pScene)
 				{
-					m_pNextScene = p;
 					delete m_pScene;
 					auto p2 = dynamic_cast<CBase*>(p);
 					if (p2 != nullptr)
@@ -71,6 +77,7 @@ namespace Scene {
 					}
 				}
 			}
+			if (m_pStageController != nullptr)
 			{
 				auto p = m_pStageController->Update();
 				if (p != m_pStageController)

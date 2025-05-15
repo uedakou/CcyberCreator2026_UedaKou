@@ -75,8 +75,8 @@ private:
 	float m_fSpeed;	// スピード
 	float m_fBrake;	// ブレーキ抵抗
 	float m_fBoost;	// ブースト速度
-	CLife_2D* m_pLife;
-	CEffectGeneratorPaeticle* m_pEffect;
+	CLife_2D* m_pLife;	// 体力
+	CEffectGeneratorPaeticle* m_pEffect;	// ブースターエフェクト
 
 protected:
 	// プレイヤー基底

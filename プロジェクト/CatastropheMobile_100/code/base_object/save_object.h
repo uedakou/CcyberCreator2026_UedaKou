@@ -16,7 +16,7 @@ public:
 	virtual ~CSaveObject();
 	virtual CSaveObject* GetPrev() { return m_pPrev; }
 	virtual CSaveObject* GetNext() { return m_pNext; }
-
+	CObject* GetMyObject() { return m_pObject; }		// オブジェクト崇徳
 	CSaveObject* SetList(CSaveObject* pTop, CSaveObject* pCor);	//　生成
 	void FlagDeath();
 private:

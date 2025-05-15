@@ -6,9 +6,9 @@
 //===========================================
 #ifndef _STAGE_001_
 #define _STAGE_001_
-#include "scene_game.h"
-#include "stage_load.h"
-#include "../object/player.h"
+#include "scene_game.h"	// 基底ゲームシーン
+#include "stage_load.h"	// ステージ読み込みシーン
+
 
 namespace Scene {
 	namespace Game {
@@ -17,12 +17,11 @@ namespace Scene {
 		public:
 			CStage_001(CBase* game, CGameData* gameData);
 			~CStage_001();
-			virtual nsPrev::CBase* Update()	override;
-			void Draw() const override;
-			virtual bool GetPose()override;
+			virtual nsPrev::CBase* Update()	override;	// 更新
+			void Draw() const override;	// 描画
+			virtual bool GetPose()override;	// ポーズしているかどうか
 		private:
-			int m_nCntMakeFilde;
-			CPlayer* m_player;
+			int m_nCntMakeFilde;	// フィールド生成カウント
 		};
 	}
 }

@@ -57,15 +57,15 @@ public:
 	void SetMoveRotX(float x) { m_xmove.rot.x = x; }// Œü‚«İ’è
 	void SetMoveRotY(float y) { m_xmove.rot.y = y; }// Œü‚«İ’è
 	void SetMoveRotZ(float z) { m_xmove.rot.z = z; }// Œü‚«İ’è
-	void SetMoveSiz(D3DXVECTOR3 siz) { m_xmove.siz = siz; }// ‘å‚«‚³İ’è
-	void SetMoveSizX(float x) { m_xmove.siz.x = x; }// ‘å‚«‚³İ’è
-	void SetMoveSizY(float y) { m_xmove.siz.y = y; }// ‘å‚«‚³İ’è
-	void SetMoveSizZ(float z) { m_xmove.siz.z = z; }// ‘å‚«‚³İ’è
+	void SetMoveSiz(D3DXVECTOR3 siz) { m_xmove.scl = siz; }// ‘å‚«‚³İ’è
+	void SetMoveSizX(float x) { m_xmove.scl.x = x; }// ‘å‚«‚³İ’è
+	void SetMoveSizY(float y) { m_xmove.scl.y = y; }// ‘å‚«‚³İ’è
+	void SetMoveSizZ(float z) { m_xmove.scl.z = z; }// ‘å‚«‚³İ’è
 
 	X GetMoveX() { return m_xmove; }
 	D3DXVECTOR3 GetMovePos() { return m_xmove.pos; }// ‰^“®—Êİ’è
 	D3DXVECTOR3 GetMoveRot() { return m_xmove.rot; }// ‰ñ“]—Êİ’è
-	D3DXVECTOR3 GetMoveSiz() { return m_xmove.siz; }// –c’£—Êİ’è
+	D3DXVECTOR3 GetMoveSiz() { return m_xmove.scl; }// –c’£—Êİ’è
 
 	void AddMoveX(X x) { m_xmove = x; }
 	void AddMovePos(D3DXVECTOR3 pos) { m_xmove.pos += pos; }// ˆÊ’uİ’è
@@ -76,21 +76,21 @@ public:
 	void AddMoveRotX(float x) { m_xmove.rot.x += x; }// ‘å‚«‚³İ’è
 	void AddMoveRotY(float y) { m_xmove.rot.y += y; }// ‘å‚«‚³İ’è
 	void AddMoveRotZ(float z) { m_xmove.rot.z += z; }// ‘å‚«‚³İ’è
-	void AddMoveSiz(D3DXVECTOR3 siz) { m_xmove.siz += siz; }// ‘å‚«‚³İ’è
-	void AddMoveSizX(float x) { m_xmove.siz.x += x; }// ‘å‚«‚³İ’è
-	void AddMoveSizY(float y) { m_xmove.siz.y += y; }// ‘å‚«‚³İ’è
-	void AddMoveSizZ(float z) { m_xmove.siz.z += z; }// ‘å‚«‚³İ’è
+	void AddMoveSiz(D3DXVECTOR3 siz) { m_xmove.scl += siz; }// ‘å‚«‚³İ’è
+	void AddMoveSizX(float x) { m_xmove.scl.x += x; }// ‘å‚«‚³İ’è
+	void AddMoveSizY(float y) { m_xmove.scl.y += y; }// ‘å‚«‚³İ’è
+	void AddMoveSizZ(float z) { m_xmove.scl.z += z; }// ‘å‚«‚³İ’è
 
 	// “–‚½‚è”»’è
 	void SetCollisionX(X pX) { m_Xcollision = pX; }	//	“–‚½‚è”»’èİ’è
 	void SetCollisionPos(D3DXVECTOR3 pPos) { m_Xcollision.pos = pPos; }	//	“–‚½‚è”»’èİ’è
 	void SetCollisionRot(D3DXVECTOR3 pRot) { m_Xcollision.rot = pRot; }	//	“–‚½‚è”»’èİ’è
-	void SetCollisionSiz(D3DXVECTOR3 pSiz) { m_Xcollision.siz = pSiz; }	//	“–‚½‚è”»’èİ’è
+	void SetCollisionSiz(D3DXVECTOR3 pSiz) { m_Xcollision.scl = pSiz; }	//	“–‚½‚è”»’èİ’è
 
 	X GetCollisionX() { return m_Xcollision; }	//	“–‚½‚è”»’èæ“¾
 	D3DXVECTOR3 GetCollisionPos() { return m_Xcollision.pos; }	//	“–‚½‚è”»’èæ“¾
 	D3DXVECTOR3 GetCollisionRot() { return m_Xcollision.rot; }	//	“–‚½‚è”»’èæ“¾
-	D3DXVECTOR3 GetCollisionSiz() { return m_Xcollision.siz; }	//	“–‚½‚è”»’èæ“¾
+	D3DXVECTOR3 GetCollisionSiz() { return m_Xcollision.scl; }	//	“–‚½‚è”»’èæ“¾
 protected:
 	virtual void Hit(int nDamage);
 	virtual void Hit(int nCntInvincible, int nDamage);

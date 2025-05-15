@@ -22,7 +22,10 @@ namespace Scene {
 			virtual bool GetPose()override;
 		private:
 			int m_nCntMakeFilde;
-			CPlayer* m_player;
+			CObject2D* m_pPU;	// ポップアップ
+			static const D3DXVECTOR3 s_pPUpos;	// ポップアップ位置
+			static const D3DXVECTOR3 s_pPUsiz;	// ポップアップ大きさ
+			static const string s_PUTextyure;	// ポップアップ大きさ
 		};
 	}
 }

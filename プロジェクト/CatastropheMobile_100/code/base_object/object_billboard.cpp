@@ -58,10 +58,10 @@ void CObjectBillbord::Init()
 	// 頂点バッファロックをし、頂点情報を
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	pVtx[0].pos = D3DXVECTOR3(-x.siz.x * 0.5f, x.siz.y,0.0f);
-	pVtx[1].pos = D3DXVECTOR3(x.siz.x * 0.5f, x.siz.y, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(-x.siz.x * 0.5f, 0.0f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(x.siz.x * 0.5f, 0.0f, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(-m_siz.x * 0.5f, m_siz.y,0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_siz.x * 0.5f, m_siz.y, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(-m_siz.x * 0.5f, 0.0f, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_siz.x * 0.5f, 0.0f, 0.0f);
 
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);

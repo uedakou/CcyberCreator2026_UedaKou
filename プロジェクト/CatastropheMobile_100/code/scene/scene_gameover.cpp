@@ -23,7 +23,7 @@ namespace Scene {
 	CGameOver::CGameOver(CBase* scene) :
 		CBase(*scene)
 	{
-		CObject::ReleaseAll();
+		CObject::ReleaseScene();
 
 		CManager* pManager = CManager::GetInstance();
 		CSound* pSound = pManager->GetSound();
@@ -39,7 +39,7 @@ namespace Scene {
 #endif // 0
 		// ƒeƒLƒXƒg
 		m_pText = nullptr;
-		m_pText = CText::creat(300, 100, 0, 2, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_PITCH, CText::Type::Terminal);
+		m_pText = CText::creat(300, 100, 0, 2, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_PITCH, CText::FontType::Terminal);
 		m_pText->SetCol(D3DXCOLOR(0.8f, 0.0f, 0.1f, 1.0f));
 
 		// ”wŒi
@@ -97,12 +97,12 @@ namespace Scene {
 		//
 		if (m_pObject != nullptr)
 		{
-			m_pObject->DeathFlag();
+			m_pObject->Release();
 			m_pObject = nullptr;
 		}
 		if (m_pCor != nullptr)
 		{
-			m_pCor->DeathFlag();
+			m_pCor->Release();
 			m_pCor = nullptr;
 		}
 	}

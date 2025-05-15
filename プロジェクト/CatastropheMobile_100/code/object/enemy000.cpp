@@ -71,10 +71,11 @@ void CEnemy000::Init()
 	}
 
 	CEnemy::SetType(CEnemy::ENEMY_TYPE::Enemy000);
+	SetLife(Enemy000_LIFE);	// 敵体力設定
 
-	SetLife(Enemy000_LIFE);
-	D3DXVECTOR3 pos = GetPos();
-	m_pLife3D = CLife_3D::creat(D3DXVECTOR3(pos.x, pos.y, pos.z), Enemy000_LIFE);
+	D3DXVECTOR3 pos = GetPos();	// 敵の位置取得
+	m_pLife3D = CLife_3D::creat(D3DXVECTOR3(pos.x, pos.y, pos.z), Enemy000_LIFE);	// 生成
+	m_pLife3D->SetReleaseScene(false);	// シーンでリリースしないようにする
 }
 //============================================
 // 終了処理
@@ -84,8 +85,7 @@ void CEnemy000::Uninit()
 	CEnemy::Uninit();
 	if (m_pLife3D != nullptr)
 	{
-		m_pLife3D->Uninit();
-		m_pLife3D->DeathFlag();
+		m_pLife3D->Release();
 		m_pLife3D = nullptr;
 	}
 }
@@ -96,15 +96,15 @@ void CEnemy000::Update()
 {
 	X coll = GetCollisionX();
 	D3DXVECTOR3 pos = GetPos();
-	if (pos.x < -500.0f + coll.siz.x * 0.5f)
+	if (pos.x < -500.0f + coll.scl.x * 0.5f)
 	{
 		SetMovePosX(0.0f);
-		SetPosX(-500.0f + coll.siz.x * 0.5f);
+		SetPosX(-500.0f + coll.scl.x * 0.5f);
 	}
-	else if (pos.x > 500.0f - coll.siz.x * 0.5f)
+	else if (pos.x > 500.0f - coll.scl.x * 0.5f)
 	{
 		SetMovePosX(0.0f);
-		SetPosX(500.0f - coll.siz.x * 0.5f);
+		SetPosX(500.0f - coll.scl.x * 0.5f);
 	}
 
 	CEnemy::Update();
@@ -296,7 +296,7 @@ CEnemy000::CActivity_Enemy000* CEnemy000::CActivity_Enemy000_Following::update()
 				// 衝突判定
 				if (obb1.CheckOverlap(obb2))
 				{
-#if 0
+#if 1
 					//std::cout << "OBBは交差しています！" << std::endl;
 					D3DXVECTOR3 ShockRot = D3DXVECTOR3(
 						atan2(enemypos.x, playerpos.x),
@@ -305,7 +305,7 @@ CEnemy000::CActivity_Enemy000* CEnemy000::CActivity_Enemy000_Following::update()
 					D3DXVECTOR3 Normalize;
 					D3DXVec3Normalize(&Normalize, &ShockRot);
 
-					pPlayer->Hit(Normalize * 10.0f, 60, m_pPrimary->GetAttcak());
+					pPlayer->Hit(Normalize * 10.0f, 10, m_pPrimary->GetAttcak());
 #else
 					CManager* pInstance = CManager::GetInstance();
 					CSound* pSound = pInstance->GetSound();
@@ -317,13 +317,13 @@ CEnemy000::CActivity_Enemy000* CEnemy000::CActivity_Enemy000_Following::update()
 				}
 				else
 				{
-					CManager* pInstance = CManager::GetInstance();
-					CSound* pSound = pInstance->GetSound();
-					//std::cout << "OBBは交差していません。" << std::endl;
-					if (pSound->IsPlaySound(CSound::SOUND_LABEL::SOUND_BEEP) == true)
-					{
-						pSound->StopSound(CSound::SOUND_LABEL::SOUND_BEEP);
-					}
+					//CManager* pInstance = CManager::GetInstance();
+					//CSound* pSound = pInstance->GetSound();
+					////std::cout << "OBBは交差していません。" << std::endl;
+					//if (pSound->IsPlaySound(CSound::SOUND_LABEL::SOUND_BEEP) == true)
+					//{
+					//	pSound->StopSound(CSound::SOUND_LABEL::SOUND_BEEP);
+					//}
 				}
 			}
 			objrct = Nextobjrct;
@@ -466,7 +466,7 @@ CEnemy000::CActivity_Enemy000* CEnemy000::CActivity_Enemy000_Death::update()
 	}
 	else
 	{
-		m_pPrimary->DeathFlag();
+		m_pPrimary->Release();
 	}
 	return this;
 }

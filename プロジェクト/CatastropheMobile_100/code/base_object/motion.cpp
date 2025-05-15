@@ -130,23 +130,24 @@ CParts::CParts()
 	// 基本位置
 	m_xBasic.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_xBasic.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_xBasic.siz = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	m_xBasic.scl = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	// 追加位置
 	m_xOffset.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_xOffset.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_xOffset.siz = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_xOffset.scl = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	// 動き
 	m_xMove.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_xMove.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_xMove.siz = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_xMove.scl = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	m_nParent = -1;
+	m_nParent = -1;	// 親
 
 	m_bDisplay = 0;		// 表示するかどうか
 
-	m_pNowMotion = new CNowMotion;
+	m_pNowMotion = new CNowMotion;	
 
-	SetNormalUpdate(false);
+	SetNormalUpdate(false);	// 全体更新をするかどうか
+	SetReleaseScene(false);	// シーンリリースをするかどうか
 }
 CParts::CParts(int nPriority) : 
 	CObjectX(nPriority)
@@ -154,22 +155,24 @@ CParts::CParts(int nPriority) :
 	// 基本位置
 	m_xBasic.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_xBasic.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_xBasic.siz = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	m_xBasic.scl = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	// 追加位置
 	m_xOffset.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_xOffset.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_xOffset.siz = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_xOffset.scl = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	// 動き
 	m_xMove.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_xMove.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_xMove.siz = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_xMove.scl = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	m_nParent = -1;	// 親
 
-	//m_nIndex = 0;		// パーツ種類// 
 	m_bDisplay = 0;		// 表示するかどうか
 
 	m_pNowMotion = new CNowMotion;
+
+	SetNormalUpdate(false);	// 全体更新をするかどうか
+	SetReleaseScene(false);	// シーンリリースをするかどうか
 }
 //============================================
 // デストラ(パーツ)
@@ -202,12 +205,12 @@ void CParts::Update()
 	//m_nID;
 	m_xOffset.pos += m_xMove.pos;
 	m_xOffset.rot += m_xMove.rot;
-	m_xOffset.siz += m_xMove.siz;
+	m_xOffset.scl += m_xMove.scl;
 	// 加算分を計算
 	D3DXVECTOR3 pos, rot, siz;
 	pos = m_xOffset.pos + m_xBasic.pos;
 	rot = m_xOffset.rot + m_xBasic.rot;
-	siz = m_xOffset.siz + m_xBasic.siz;
+	siz = m_xOffset.scl + m_xBasic.scl;
 	// 計算分を反映
 	CObjectX::SetX(pos, rot, siz);
 	CObjectX::Update();
@@ -288,7 +291,7 @@ void CParts::SetMoveX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 siz, int nFr
 	X x;
 	x.pos = pos - m_xOffset.pos;
 	x.rot = rot - m_xOffset.rot;
-	x.siz = siz - m_xOffset.siz;
+	x.scl = siz - m_xOffset.scl;
 
 
 	if (x.rot.x > D3DX_PI)
@@ -324,9 +327,9 @@ void CParts::SetMoveX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 siz, int nFr
 	m_xMove.rot.x = x.rot.x / (float)nFrame;
 	m_xMove.rot.y = x.rot.y / (float)nFrame;
 	m_xMove.rot.z = x.rot.z / (float)nFrame;
-	m_xMove.siz.x = x.siz.x / (float)nFrame;
-	m_xMove.siz.y = x.siz.y / (float)nFrame;
-	m_xMove.siz.z = x.siz.z / (float)nFrame;
+	m_xMove.scl.x = x.scl.x / (float)nFrame;
+	m_xMove.scl.y = x.scl.y / (float)nFrame;
+	m_xMove.scl.z = x.scl.z / (float)nFrame;
 	m_pNowMotion->SetFrame(nFrame);
 }
 //============================================
@@ -370,16 +373,6 @@ CObjectMotion::~CObjectMotion()
 			delete m_pMotion[nCnt];
 		}
 	}
-	for (int nCnt = 0; nCnt < MAX_PARTS; nCnt++)
-	{
-
-		if (m_pParts[nCnt] != nullptr)
-		{
-			m_pParts[nCnt]->DeathFlag();
-			m_pParts[nCnt] = nullptr;
-		}
-	}
-
 }
 //============================================
 // 初期化
@@ -400,6 +393,7 @@ void CObjectMotion::Init()
 			TargetMotion->GetRotTarget(),	// 向き
 			TargetMotion->GetSizTarget(),
 			m_pMotion[GetNextMotion()]->GetKye(0)->GetFrame());	// 大きさ
+		m_pParts[nCnt]->SetReleaseScene(false);	// シーンでリリースしない
 	}
 }
 //============================================
@@ -407,11 +401,17 @@ void CObjectMotion::Init()
 //============================================
 void CObjectMotion::Uninit()
 {
+	// パーツリリース
 	for (int nCntParts = 0; nCntParts < m_nParts; nCntParts++)
 	{
-		m_pParts[nCntParts]->Uninit();
+		if (m_pParts[nCntParts] != nullptr)
+		{
+			m_pParts[nCntParts]->Uninit();
+			m_pParts[nCntParts]->Release();
+			m_pParts[nCntParts] = nullptr;
+		}
 	}
-	CObject::DeathFlag();
+	CObject::Release();
 }
 //============================================
 // 更新処理
@@ -488,6 +488,21 @@ void CObjectMotion::Draw()
 			m_pParts[nCntParts]->Draw();
 		}
 	}
+}
+
+void CObjectMotion::Release()
+{
+	// パーツリリース
+	for (int nCnt = 0; nCnt < MAX_PARTS; nCnt++)
+	{
+		if (m_pParts[nCnt] != nullptr)
+		{
+			m_pParts[nCnt]->Release();
+			m_pParts[nCnt] = nullptr;
+		}
+	}
+	// モーシオンオブジェクトリリース
+	CObject::Release();
 }
 
 CObjectMotion* CObjectMotion::creat(const char* FileName)

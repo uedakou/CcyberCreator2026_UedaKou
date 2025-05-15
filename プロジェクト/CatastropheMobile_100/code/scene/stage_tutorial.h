@@ -23,66 +23,57 @@ namespace Scene {
 			virtual bool GetPose()override;
 		private:
 			// 基底
-			class CTutorial
+			class CTutorialStrategy
 			{
 			public:
-				CTutorial(CGameData* gameData) { m_gameData = gameData; }
-				virtual ~CTutorial() {}
-				virtual CTutorial*update () = 0;
+				CTutorialStrategy(CGameData* gameData) { m_gameData = gameData; }
+				virtual ~CTutorialStrategy() {}
+				virtual CTutorialStrategy*update () = 0;
 			protected:
 				CGameData* m_gameData;
 			};
 			// チュートリアル
-			class CTutorial000 : public CTutorial
+			class CTutorial000 : public CTutorialStrategy
 			{
 			public:
 				CTutorial000(CGameData* gamaData);
 				~CTutorial000();
-				virtual CTutorial* update();
+				virtual CTutorialStrategy* update();
 			private:
 				const int m_nMaxCnt;	// カウント最大値
 				int m_nCnt;		// カウント
 				CObject2D* m_pPopup;	// ポップアップ
 				bool m_bNext;	// 次に行けるか
 			};
-			class CTutorial001 : public CTutorial
+			class CTutorial001 : public CTutorialStrategy
 			{
 			public:
 				CTutorial001(CGameData* gamaData);
 				~CTutorial001();
-				virtual CTutorial* update();
+				virtual CTutorialStrategy* update();
 			private:
 				const int m_nMaxCnt;	// カウント最大値
 				int m_nCnt;		// カウント
 				CObject2D* m_pPopup;	// ポップアップ
 				bool m_bNext;	// 次に行けるか
 			};
-			class CTutorial002 : public CTutorial
+			class CTutorial002 : public CTutorialStrategy
 			{
 			public:
 				CTutorial002(CGameData* gamaData);
 				~CTutorial002();
-				virtual CTutorial* update();
+				virtual CTutorialStrategy* update();
 			private:
 				const int m_nMaxCnt;	// カウント最大値
 				int m_nCnt;		// カウント
 				CObject2D* m_pPopup;	// ポップアップ
-				CEnemy000Tutorial* pEnemy;
+				CEnemy000Tutorial* m_pEnemy;	// チュートリアル敵
 				bool m_bNext;	// 次に行けるか
-			};
-			class CTutorialDebug : public CTutorial	// デバッグ
-			{
-			public:
-				CTutorialDebug(CGameData* gamaData);
-				~CTutorialDebug();
-				virtual CTutorial* update();
-			private:
-				CEnemy000* m_pEnemy;
+				static const float m_fEnemyPosZ;
 			};
 		private:
 			int m_nCntMakeFilde;
-			CTutorial* m_pUpdate;
-			CPlayer* m_player;
+			CTutorialStrategy* m_pUpdate;	// 
 		};
 	}
 }

@@ -52,10 +52,10 @@ void CObject3D::Init()
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 
-	pVtx[0].pos = D3DXVECTOR3( - x.siz.x * 0.5f, x.siz.y	,   x.siz.z * 0.5f);
-	pVtx[1].pos = D3DXVECTOR3(   x.siz.x * 0.5f, x.siz.y	,   x.siz.z * 0.5f);
-	pVtx[2].pos = D3DXVECTOR3( - x.siz.x * 0.5f, 0			, - x.siz.z * 0.5f);
-	pVtx[3].pos = D3DXVECTOR3(   x.siz.x * 0.5f, 0			, - x.siz.z * 0.5f);
+	pVtx[0].pos = D3DXVECTOR3( - x.scl.x * 0.5f, x.scl.y	,   x.scl.z * 0.5f);
+	pVtx[1].pos = D3DXVECTOR3(   x.scl.x * 0.5f, x.scl.y	,   x.scl.z * 0.5f);
+	pVtx[2].pos = D3DXVECTOR3( - x.scl.x * 0.5f, 0			, - x.scl.z * 0.5f);
+	pVtx[3].pos = D3DXVECTOR3(   x.scl.x * 0.5f, 0			, - x.scl.z * 0.5f);
 
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -173,10 +173,10 @@ void CObject3D::SetBlock(int nX, int nY)
 	VERTEX_3D* pVtx;	// 頂点ポインタ
 	// 頂点バッファロックをし、頂点情報を
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-	pVtx[0].pos = D3DXVECTOR3(-x.siz.x * 0.5f * (float)nX, x.siz.y * (float)nY, x.siz.z * 0.5f * (float)nY);
-	pVtx[1].pos = D3DXVECTOR3(x.siz.x * 0.5f * (float)nX, x.siz.y * (float)nY, x.siz.z * 0.5f * (float)nY);
-	pVtx[2].pos = D3DXVECTOR3(-x.siz.x * 0.5f * (float)nX, 0 * (float)nY, -x.siz.z * 0.5f * (float)nY);
-	pVtx[3].pos = D3DXVECTOR3(x.siz.x * 0.5f * (float)nX, 0 * (float)nY, -x.siz.z * 0.5f * (float)nY);
+	pVtx[0].pos = D3DXVECTOR3(-x.scl.x * 0.5f * (float)nX, x.scl.y * (float)nY, x.scl.z * 0.5f * (float)nY);
+	pVtx[1].pos = D3DXVECTOR3(x.scl.x * 0.5f * (float)nX, x.scl.y * (float)nY, x.scl.z * 0.5f * (float)nY);
+	pVtx[2].pos = D3DXVECTOR3(-x.scl.x * 0.5f * (float)nX, 0 * (float)nY, -x.scl.z * 0.5f * (float)nY);
+	pVtx[3].pos = D3DXVECTOR3(x.scl.x * 0.5f * (float)nX, 0 * (float)nY, -x.scl.z * 0.5f * (float)nY);
 
 	pVtx[0].tex = D3DXVECTOR2(0.0f * (float)nX, 0.0f * (float)nY);
 	pVtx[1].tex = D3DXVECTOR2(1.0f * (float)nX, 0.0f * (float)nY);

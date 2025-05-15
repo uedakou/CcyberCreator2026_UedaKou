@@ -30,17 +30,19 @@ namespace Scene {
 		CSound* pSound = pManager->GetSound();
 		CCamera* pCamera = pManager->GetCamera();
 
-		CObject::ReleaseAll();
+		CObject::ReleaseScene();
 		pSound->PlaySoundA(CSound::SOUND_LABEL::SOUND_REZULT000);
 
-		// 背景
+		// 背景床生成
 		m_pField[0] = CObject3D::creat(
 			D3DXVECTOR3(0.0f, 0.0f, 4500.0f),
 			D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 			D3DXVECTOR3(1000.0f, 0.0f, 1000.0f));
-		m_pField[0]->SetBlock(1, 10);
-		m_pField[0]->SetTexture("data\\TEXTURE\\AsphaltLoad000.png");
+		m_pField[0]->SetBlock(1, 10);	// ブロック数を設定
+		m_pField[0]->SetTexture("data\\TEXTURE\\AsphaltLoad000.png");	// テクスチャ設定
 		m_pField[0]->SetType(CObject::TYPE::FIELD);
+		m_pField[0]->SetReleaseScene(false);
+
 		m_pField[1] = CObject3D::creat(
 			D3DXVECTOR3(-2000.0f, 0.0f, 4500.0f),
 			D3DXVECTOR3(0.0f, 0.0f, 0.0f),
@@ -48,6 +50,8 @@ namespace Scene {
 		m_pField[1]->SetBlock(3, 10);
 		m_pField[1]->SetTexture("data\\TEXTURE\\Glass000.png");
 		m_pField[1]->SetType(CObject::TYPE::FIELD);
+		m_pField[1]->SetReleaseScene(false);
+
 		m_nCntField = 0;
 
 		float fRand;
@@ -58,19 +62,23 @@ namespace Scene {
 			pBillbord = CObjectBillbord::creat(D3DXVECTOR3(-700.0f, 0.0f, 250.0f * nCnt), D3DXVECTOR3(150.0f, 200.0f + 15.0f * fRand, 0.0f));
 			pBillbord->SetTexture("data\\TEXTURE\\tree000.png");
 			pBillbord->SetType(CObjectBillbord::TYPE::TREE);
+			pBillbord->SetType(CObjectBillbord::TYPE::TREE);
 		}
 
+		// ランキング生成
 		for (int nCnt = 0; nCnt < 5; nCnt++)
 		{
+			// m_Rancがカラでなければ削除
 			if (m_Ranc[nCnt] != nullptr)
 			{
 				Beep(900, 300);
 				delete m_Ranc[nCnt];
 				m_Ranc[nCnt] = nullptr;
 			}
-			m_Ranc[nCnt] = CText::creat(100, 0, 0, 3, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_PITCH, CText::Type::Terminal);
-			m_Ranc[nCnt]->SetSpace(100, 200 + 100* nCnt, SCREEN_W, SCREEN_H);
-			m_nRanc[nCnt] = 0;
+			m_Ranc[nCnt] = CText::creat(100, 0, 0, 3, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_PITCH, CText::FontType::Terminal);
+			m_Ranc[nCnt]->SetSpace(100, 200 + 100* nCnt, SCREEN_W, SCREEN_H);	// 文字スペース設定
+			m_Ranc[nCnt]->SetReleaseScene(false);	// シーンでリリースしないようにする
+			m_nRanc[nCnt] = 0;	// ランキングの中身を初期化
 		}
 		// 受け取るスコア
 		m_Score = nullptr;
@@ -98,8 +106,6 @@ namespace Scene {
 		posV.y = CameraRPos.y - sinf(rotCumera.x - (D3DX_PI * 0.5f)) * Leng;
 		posV.z = CameraRPos.z - cosf(rotCumera.x - (D3DX_PI * 0.5f)) * cosf(rotCumera.y) * Leng;
 		pCamera->SetCameraPosV(D3DXVECTOR3(posV));	// 注視点をプレイヤーにする
-
-		pCamera->SetCameraPosV(D3DXVECTOR3(posV));	// 注視点をプレイヤーにする
 		LoadRanc();
 	}
 	//============================================
@@ -108,14 +114,21 @@ namespace Scene {
 	CResult::~CResult()
 	{
 		CManager* pManager = CManager::GetInstance();
+		// BGMを止める
 		CSound* pSound = pManager->GetSound();
 		pSound->StopSound(CSound::SOUND_LABEL::SOUND_REZULT000);
+
+		// カメラの向きを戻す
+		CCamera* pCamera = CManager::GetInstance()->GetCamera();
+		D3DXVECTOR3 rotCumera = pCamera->GetCameraRot();	// カメラの向きを取得
+		rotCumera.y = D3DX_PI;
+		pCamera->SetCameraRot(CCamera::CENTER::R, rotCumera);
 
 		for (int nCnt = 0; nCnt < 2; nCnt++)
 		{
 			if (m_pField[nCnt] != nullptr)
 			{
-				m_pField[nCnt]->DeathFlag();
+				m_pField[nCnt]->Release();
 				m_pField[nCnt] = nullptr;
 			}
 		}
@@ -123,13 +136,13 @@ namespace Scene {
 		{
 			if (m_Ranc[nCnt] != nullptr)
 			{
-				m_Ranc[nCnt]->DeathFlag();
+				m_Ranc[nCnt]->Release();
 				m_Ranc[nCnt] = nullptr;
 			}
 		}
 		if (m_Score != nullptr)
 		{
-			m_Score->DeathFlag();
+			m_Score->Release();
 			m_Score = nullptr;
 		}
 
@@ -180,7 +193,7 @@ namespace Scene {
 					D3DXVECTOR3 pos = pTree->GetPos();
 					if (pos.z <= -500.0f)
 					{
-						pTree->DeathFlag();
+						pTree->Release();
 					}
 
 				}
@@ -253,8 +266,9 @@ namespace Scene {
 		}
 		else
 		{
-			m_Score = CText::creat(100, 0, 0, 3, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_PITCH, CText::Type::Terminal);
+			m_Score = CText::creat(100, 0, 0, 3, FALSE, SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_PITCH, CText::FontType::Terminal);
 			m_Score->SetSpace(800, 600, SCREEN_W, SCREEN_H);
+			m_Score->SetReleaseScene(false);	// シーンでリリースしないようにする
 		}
 		int nMax = 0;
 		for (int nCnt = 0; nCnt < 5; nCnt++)
