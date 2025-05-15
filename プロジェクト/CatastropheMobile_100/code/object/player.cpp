@@ -35,14 +35,26 @@ CPlayer::CPlayer()
 //============================================
 CPlayer::~CPlayer()
 {
+	CCharacter::Uninit();
+	// ライフ解放
 	if (m_pLife != nullptr)
 	{
+		m_pLife->Release();
 		m_pLife = nullptr;
 	}
-	if (m_pEffect != nullptr)
+
+	// エフェクト解放
+	if (m_pEffect)
 	{
+		m_pEffect->Release();
 		m_pEffect = nullptr;
 	}
+	// 行動削除
+	if (m_pActivity != nullptr)
+	{
+		delete m_pActivity;
+	}
+	
 }
 //============================================
 // 初期化
@@ -75,20 +87,6 @@ void CPlayer::Init()
 //============================================
 void CPlayer::Uninit()
 {
-	CCharacter::Uninit();
-	// ライフ解放
-	if (m_pLife != nullptr)
-	{
-		m_pLife->Release();
-		m_pLife = nullptr;
-	}
-
-	// エフェクト解放
-	if (m_pEffect)
-	{
-		m_pEffect->Release();
-		m_pEffect = nullptr;
-	}
 }
 //============================================
 // 更新
@@ -449,6 +447,7 @@ CPlayer::PlayerActivityAttack::PlayerActivityAttack(CPlayer* player) :
 		5,
 		1,
 		PLAYER_ATTAC);
+	m_pEffect->SetReleaseScene(false);	// シーンリリースをから外す
 
 }
 CPlayer::PlayerActivity* CPlayer::PlayerActivityAttack::update()
@@ -515,6 +514,14 @@ CPlayer::PlayerActivity* CPlayer::PlayerActivityAttack::update()
 		return new PlayerActivityUsually(m_pPrimary);
 	}
 	return this;
+}
+CPlayer::PlayerActivityAttack::~PlayerActivityAttack()
+{
+	if (m_pEffect = nullptr)
+	{
+		m_pEffect->Release();
+		m_pEffect = nullptr;
+	}
 }
 //============================================
 // 行動ヒット

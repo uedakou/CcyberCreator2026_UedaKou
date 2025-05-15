@@ -101,7 +101,7 @@ protected:
 	{
 	public:
 		PlayerActivityAttack(CPlayer* player);
-		~PlayerActivityAttack() {}
+		~PlayerActivityAttack();
 		virtual PlayerActivity* update()override;
 		int nAttackCnt;
 		CEffectGeneratorPaeticle* m_pEffect;
